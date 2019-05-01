@@ -1,0 +1,324 @@
+#Ta Anh Minh
+#300078762
+#ITI1120 -E00
+#Assignment 3
+
+import random
+#Making deck
+def make_deck(num):#done
+    '''
+    (int)->list of int
+    Returns a list of integers representing the strange deck with num ranks.
+    '''
+    list = []
+    sum =0
+    for o in range(1, num+1):
+        for i in range(100,500,100):
+            sum = i + o
+            list.append(sum)
+    return list
+
+def shuffle_deck(deck):#done
+    '''
+    (list of int)->None
+    Shuffles the given list of strings representing the playing deck
+    '''
+    random.shuffle(deck)
+    return deck
+
+def deal_cards_start(deck):#done
+    '''(list of int)-> list of int
+     Returns a list representing the player's starting hand.
+     It is  obtained by dealing the first 7 cards from the top of the deck.
+     Precondition: len(dec)>=7
+     '''
+    list = []
+    for i in range(7):
+        list.append(deck[i])
+    return list
+
+def deal_new_cards(deck, player, num): #done
+    '''
+    (list of int, list of int, int)-> list of integer (new hand)
+    Given the remaining deck, current player's hand and an integer num,
+    the function deals num cards to the player from the top of the deck.
+    If len(deck)<num then len(deck) cards is dealt, in particular
+    all the remaining cards from the deck are dealt.
+    '''
+    if num < len(deck):
+        for i in range (num):
+            player.append(deck[i])
+        player1 = player
+        return player1
+    else:
+        for i in range (len(deck)):
+            player.append(deck[i])
+        player1 = player
+        return player1
+
+def print_deck_twice(deck): #done
+    '''
+    (list)->None
+    Prints elements of a given list deck in two useful ways.
+    First way: sorted by suit and then rank.
+    Second way: sorted by rank.
+    Precondition: hand is a subset of the strange deck.
+    '''
+    list = []
+    for i in range(len(deck)): #number of cards on hand
+        list.append(deck[i])
+    num = 0
+    for i in range (len(deck)-1):
+        for o in range (len(deck)-1):
+            if (list[o]%100) > (list[o+1]%100):
+                num = list[o]
+                list[o] = list[o+1]
+                list[o+1] = num
+    for i in range (len(deck)-1):
+        for o in range (len(deck)-1):
+            if (list[o]%100) == (list[o+1]%100):
+                if (list[o]//100) >(list[o+1]//100):
+                    num = list[o]
+                    list[o] = list[o+1]
+                    list[o+1] = num
+    print("\n")
+    return print (' '.join(str(x) for x in list))
+
+def is_valid(cards, player): #done
+    '''(list of int, list of int)->bool
+    Function returns True if every card in cards is the player's hand.
+    Otherwise it prints an error message and then returns False,
+    as illustrated in the followinng example runs.
+    '''
+    if set(cards) <= set(player):
+        return True
+    else:
+        return False
+
+def is_discardable_kind(cards): #done
+    '''(list of int)->True
+    Function returns True if cards form 2-, 3- or 4- of a kind of the strange deck.
+    Otherwise it returns False. If there  is not enough cards for a meld it also prints  a message about it,
+    as illustrated in the followinng example runs.
+    '''
+    if len(cards) ==2:
+        if (cards[0]%100) == (cards[1]%100):
+            return True
+        else:
+            return False
+    elif len(cards) == 3:
+        if(cards[0]%100) == (cards[1]%100) and (cards[1]%100) == (cards[2]%100):
+            return True
+        else:
+            return False
+    elif len(cards) == 4:
+        if(cards[0]%100) == (cards[1]%100)and(cards[1]%100) == (cards[2]%100) and (cards[2]%100) == (cards[3]%100):
+            return True
+        else:
+            return False
+    elif len(cards) == 1:
+        print ("Invalid input. Discardable set needs to have at least 2 cards.")
+        return False
+
+def is_discardable_seq(cards): #done
+    '''(list of int)->True
+    Function returns True if cards form progression of the strange deck.
+    Otherwise it prints an error message and then returns False,
+    as illustrated in the followinng example runs.
+    Precondition: cards is a subset of the strange deck.
+    '''
+    if len(cards) < 3:
+        print("Invalid sequence. Discardable sequence needs to have at least 3 cards.")
+        return False
+    elif len(cards) >= 3:
+        sorted_list = sorted(cards)
+        for i in range(len(cards)-1):
+            if (cards[i]//100) != (cards[i+1]//100):
+                print("Invalid sequence. Cards are not of same suit.")
+                return False
+        for i in range (len(cards)-1):
+            if (sorted_list[i]%100) != ((sorted_list[i+1]%100) -1):
+                print("Invalid sequence. While the cards are of the same suit the ranks are not consecutive integers.")
+                return False
+        return True
+
+def rolled_one_round(player): #done
+    '''(list of int)->None
+    This function plays the part when the player rolls 1
+    Precondition: player is a subset of the strange deck
+    '''
+    print("Discard any card of your choosing.")
+    discard = 0
+    while discard not in player:
+        discard = int(input("Which card would you like to discard? "))
+        if discard not in player:
+            print("No such card in your hand. Try again")
+    print("Here is your new hand printed in two ways:")
+    player.remove(discard)
+    print (' '.join(str(x) for x in player))
+    for i in range (len(player)-1):
+        for o in range (len(player)-1):
+            if (player[o]%100) > (player[o+1]%100):
+                num = player[o]
+                player[o] = player[o+1]
+                player[o+1] = num
+    for i in range (len(player)-1):
+        for o in range (len(player)-1):
+            if (player[o]%100) == (player[o+1]%100):
+                if (player[o]//100) >(player[o+1]//100):
+                    num = player[o]
+                    player[o] = player[o+1]
+                    player[o+1] = num
+    print (' '.join(str(x) for x in player))
+    return player
+
+def rolled_nonone_round(player):#done
+    '''(list of int)->None
+    This function plays the part when the player rolls 2, 3, 4, 5, or 6.
+    Precondition: player is a subset of the strange deck
+    '''
+    yes_no = input("Yes or no, do you  have a sequences of three or more cards of the same suit or two or more of a kind?") #problem how to make a loop run until
+    while yes_no != 'yes' and yes_no != 'no':
+        yes_no = input("Yes or no, do you  have a sequences of three or more cards of the same suit or two or more of a kind?")
+    while yes_no != 'no':
+        while yes_no == 'yes':
+            sequence = input("Which 3+ sequence or 2+ of a kind would you like to discard? Type in cards separated by space: ").split()
+            sequence = [int(i) for i in sequence]
+            if is_valid(sequence, player) == False:
+                for i in range(len(sequence)):
+                    if sequence[i] not in player:
+                         print (sequence[i],"not in your hand. Invalid input")
+            elif is_valid(sequence, player) == True: #player does have those cards
+                if  is_discardable_kind(sequence) == True: #does have a kind on hand
+                    print("Here is your new hand printed in two ways:")
+                    for i in range (len(sequence)):
+                            player.remove(sequence[i])
+                    print (' '.join(str(x) for x in player))
+                    for i in range (len(player)-1):
+                        for o in range (len(player)-1):
+                            if (player[o]%100) > (player[o+1]%100):
+                                num = player[o]
+                                player[o] = player[o+1]
+                                player[o+1] = num
+                    for i in range (len(player)-1):
+                        for o in range (len(player)-1):
+                            if (player[o]%100) == (player[o+1]%100):
+                                if (player[o]//100) >(player[o+1]//100):
+                                    num = player[o]
+                                    player[o] = player[o+1]
+                                    player[o+1] = num
+                    print (' '.join(str(x) for x in player))
+
+                elif is_discardable_seq(sequence) == True:
+                    print("Here is your new hand printed in two ways:")
+                    for i in range (len(sequence)):
+                        player.remove(sequence[i])
+                    print (' '.join(str(x) for x in player))
+                    for i in range (len(player)-1):
+                        for o in range (len(player)-1):
+                            if (player[o]%100) > (player[o+1]%100):
+                                num = player[o]
+                                player[o] = player[o+1]
+                                player[o+1] = num
+                    for i in range (len(player)-1):
+                        for o in range (len(player)-1):
+                            if (player[o]%100) == (player[o+1]%100):
+                                if (player[o]//100) >(player[o+1]//100):
+                                    num = player[o]
+                                    player[o] = player[o+1]
+                                    player[o+1] = num
+                    print (' '.join(str(x) for x in player))
+            if len(player) != 0:
+                yes_no = input("Yes or no, do you  have a sequences of three or more cards of the same suit or two or more of a kind?")
+            else:
+                return player
+        if yes_no != 'no':
+            yes_no = input("Yes or no, do you  have a sequences of three or more cards of the same suit or two or more of a kind?")
+        else:
+            return player
+
+
+
+
+#Printing welcome statement
+yes_no =input("The standard deck  has 52 cards: 13 ranks times 4 suits.\nWould you like to change the number of cards by changing the number of ranks? ").strip().lower()
+if yes_no == "yes":
+    ranks = int(input("Enter a number between 3 and 99, for the number of ranks: "))
+    print("You are playing with a deck of", len(make_deck(ranks)), "cards")
+    print("Here is your starting hand printed in two ways: ")
+    deck1 = make_deck(ranks) #original deck
+    deck2 = shuffle_deck(deck1) #shuffle it up
+    new_hand = deal_cards_start(deck2)  #new_hand = player
+    print((' '.join(str(x) for x in new_hand)))
+    print_deck_twice(new_hand)
+    new_deck = deck2[7:] #change into deck2 into new_deck
+
+    print("Welcome to round 1.\nPlease roll the dice.")
+    n =1
+    while len(new_hand) != 0:
+        round = random.randint(1,6)
+        if round == 1 and len(new_deck)> 0:
+            print("You rolled the dice and it shows: 1")
+            new_hand = rolled_one_round(new_hand)
+        elif round >= 2 and len(new_deck) > 0 and len(new_hand)>0:
+            print("You rolled the dice and it shows:", round)
+            print("Since your rolled,", round, "the following", round,"or",len(new_deck)," (if the deck has less than",round,"cards) will be added to your hand from the top of the deck.")
+            new_hand = deal_new_cards(new_deck, new_hand, round)
+            new_deck = new_deck[round:]
+            print((' '.join(str(x) for x in new_hand)))
+            print_deck_twice(new_hand)
+            new_hand = rolled_nonone_round(new_hand)
+        elif len(new_deck) == 0 and len(new_hand) ==1: #no more cards in the deck, automatically the dice roll to 1
+            print("You rolled the dice and it shows: 1")
+            new_hand = rolled_one_round(new_hand)
+
+        if len(new_hand) ==0 and len(new_deck)==0:
+            print ("Congratulatios, you completed the game in", n, "round")
+        elif len(new_hand) ==0 and len(new_deck)!=0:
+            print ("Congratulatios, you completed the game in", n, "round")
+        elif len(new_hand) == 1:
+            n +=1
+            print("Welcome to round", n,".\nThe game is empty deck phase.")
+        else:
+            print ("Round",n,"completed. \nWelcome to round", n+1,".")
+            n += 1
+
+else:
+    print("You are playing with a deck of", len(make_deck(13)), "cards")
+    print("Here is your starting hand printed in two ways: ")
+    deck1 = make_deck(13) #original deck
+    deck2 = shuffle_deck(deck1) #shuffle it up
+    new_hand = deal_cards_start(deck2)  #new_hand = player
+    print((' '.join(str(x) for x in new_hand)))
+    print_deck_twice(new_hand)
+    new_deck = deck2[7:] #change into deck2 into new_deck
+
+    print("Welcome to round 1.\nPlease roll the dice.")
+    n =1
+    while len(new_hand) != 0:
+        round = random.randint(1,6)
+        if round == 1 and len(new_deck)> 0:
+            print("You rolled the dice and it shows: 1")
+            new_hand = rolled_one_round(new_hand)
+        elif round >= 2 and len(new_deck) > 0 and len(new_hand)>0:
+            print("You rolled the dice and it shows:", round)
+            print("Since your rolled,", round, "the following", round,"or",len(new_deck)," (if the deck has less than",round,"cards) will be added to your hand from the top of the deck.")
+            new_hand = deal_new_cards(new_deck, new_hand, round)
+            new_deck = new_deck[round:]
+            print((' '.join(str(x) for x in new_hand)))
+            print_deck_twice(new_hand)
+            new_hand = rolled_nonone_round(new_hand)
+        elif len(new_deck) == 0 and len(new_hand) ==1: #no more cards in the deck, automatically the dice roll to 1
+            print("You rolled the dice and it shows: 1")
+            new_hand = rolled_one_round(new_hand)
+
+        if len(new_hand) ==0 and len(new_deck)==0:
+            print ("Congratulatios, you completed the game in", n, "round")
+        elif len(new_hand) ==0 and len(new_deck)!=0:
+            print ("Congratulatios, you completed the game in", n, "round")
+        elif len(new_hand) == 1:
+            n +=1
+            print("Welcome to round", n,".\nThe game is empty deck phase.")
+        else:
+            print ("Round",n,"completed. \nWelcome to round", n+1,".")
+            n += 1
